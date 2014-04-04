@@ -8,6 +8,7 @@
 
 #import "OWPhotosScroller.h"
 
+static const CGFloat kPageGap = 10.f;
 
 @interface OWPhotosScroller () <UIScrollViewDelegate>
 @property (nonatomic, strong) UIScrollView *pages;
@@ -22,7 +23,9 @@
   self = [super initWithFrame:frame];
   if (self) {
     self.backgroundColor = [UIColor blackColor];
-    self.pages = [[UIScrollView alloc] initWithFrame:self.bounds];
+    CGRect rect = self.bounds;
+    rect.size.width += kPageGap;
+    self.pages = [[UIScrollView alloc] initWithFrame:rect];
     self.pages.pagingEnabled = YES;
     self.pages.delegate = self;
     self.pageIndicator = [[UIPageControl alloc] initWithFrame:(CGRect){0.f, 0.f, 0.f, 40.f}];
@@ -45,7 +48,7 @@
   self.pageIndicator.numberOfPages = numberOfPages;
   CGSize size = self.bounds.size;
   NSAssert(size.width > 0, @"should set frame before");
-  size.width *= numberOfPages;
+  size.width = (kPageGap + size.width) * numberOfPages;
   self.pages.contentSize = size;
 }
 
@@ -56,7 +59,6 @@
 
 - (void)layoutSubviews
 {
-  self.pages.frame = self.bounds;
   CGRect rect = self.pageIndicator.frame;
   rect.size.width = self.bounds.size.width;
   rect.origin.y = self.bounds.size.height - rect.size.height;
@@ -79,7 +81,8 @@
   self.pages.contentOffset = CGPointMake(curpage * rect.size.width, 0.f);
   OWPhotoZoomingView *photoView = [self.pageViews objectForKey:@(curpage)];
   if (photoView == nil) {
-    rect.origin.x = curpage * rect.size.width;
+    rect.size.width = self.frame.size.width;
+    rect.origin.x = curpage * (rect.size.width + kPageGap);
     photoView = [[OWPhotoZoomingView alloc] initWithFrame:rect];
     [self.pageViews setObject:photoView forKey:@(curpage)];
   }
