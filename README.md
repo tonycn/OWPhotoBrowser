@@ -123,6 +123,10 @@ Usage
 
 Releases
 --------
+**0.1.1**
+* Add gap between photo pages
+* Compatible with iOS 6.x
+
 **0.1.0**
 
 * Photo browser with zooming
