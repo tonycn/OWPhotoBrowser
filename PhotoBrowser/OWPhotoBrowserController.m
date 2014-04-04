@@ -92,8 +92,11 @@
       self.backToView = [self.datasource thumbnailImageViewAtIndex:self.currentPage];
     }
   }
-  [self.presentingViewController dismissViewControllerAnimated:self.backToView.image ? YES : NO
-                                                    completion:NULL];
+  BOOL animated = self.backToView.image ? YES : NO;
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
+    animated = NO;
+  }
+  [self.presentingViewController dismissViewControllerAnimated:animated completion:NULL];
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented

@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.summary            = 'Light-weight photo browser for iOS.'
   s.homepage           = 'https://github.com/tonycn/OWPhotoBrowser'
   s.author             = { 'Jianjun Wu' => 'jxjstony@gmail.com' }
-  s.platform           = :ios, '7.0'
+  s.platform           = :ios, '6.0'
   s.source             = {
       :git => 'https://github.com/tonycn/OWPhotoBrowser.git',
       :tag => s.version.to_s
