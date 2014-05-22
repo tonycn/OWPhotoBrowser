@@ -12,6 +12,8 @@
 
 NSString *const kOWPhotoZoomingViewSingleTapNotification = @"OWPhotoZoomingViewSingleTapNotification";
 
+static Class gImageViewClass = NULL;
+
 @interface OWPhotoZoomingView () <UIScrollViewDelegate>
 @property (nonatomic, strong) UIImageView *photoImageView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleTapGesture;
@@ -21,6 +23,17 @@ NSString *const kOWPhotoZoomingViewSingleTapNotification = @"OWPhotoZoomingViewS
 
 @implementation OWPhotoZoomingView
 
++ (void)initialize
+{
+  gImageViewClass = [UIImageView class];
+}
+
++ (void)setImageViewClass:(Class)imageViewClass
+{
+  NSParameterAssert([imageViewClass isSubclassOfClass:[UIImageView class]]);
+  gImageViewClass = imageViewClass;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
@@ -29,7 +42,7 @@ NSString *const kOWPhotoZoomingViewSingleTapNotification = @"OWPhotoZoomingViewS
     self.delegate = self;
     CGRect frame= self.frame;
     frame.origin = CGPointZero;
-    self.photoImageView = [[UIImageView alloc] initWithFrame:frame];
+    self.photoImageView = [[gImageViewClass alloc] initWithFrame:frame];
     self.photoImageView.contentMode = UIViewContentModeScaleAspectFit;
     self.photoImageView.autoresizingMask = ~UIViewAutoresizingNone;
     [self addSubview:self.photoImageView];
