@@ -11,6 +11,7 @@
 #import "OWSimpleProgressHUD.h"
 
 NSString *const kOWPhotoZoomingViewSingleTapNotification = @"OWPhotoZoomingViewSingleTapNotification";
+NSString *const kOWPhotoZoomingViewLongPressedNotification = @"OWPhotoZoomingViewLongPressedNotification";
 
 static Class gImageViewClass = NULL;
 
@@ -18,6 +19,7 @@ static Class gImageViewClass = NULL;
 @property (nonatomic, strong) UIImageView *photoImageView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleTapGesture;
 @property (nonatomic, strong) UITapGestureRecognizer *doubleTapGesture;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
 @property (nonatomic, strong) OWSimpleProgressHUD *progressHUD;
 @end
 
@@ -111,6 +113,11 @@ static Class gImageViewClass = NULL;
     self.doubleTapGesture.cancelsTouchesInView = YES;
     [self addGestureRecognizer:self.doubleTapGesture];
     [self.singleTapGesture requireGestureRecognizerToFail:self.doubleTapGesture];
+    
+    self.longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(longPressed:)];
+    [self addGestureRecognizer:self.longPressGesture];
+    [self.doubleTapGesture requireGestureRecognizerToFail:self.longPressGesture];
   } else {
     [self removeGestureRecognizer:self.doubleTapGesture];
   }
@@ -119,14 +126,21 @@ static Class gImageViewClass = NULL;
 - (void)doubleTapped:(UITapGestureRecognizer *)recognizer
 {
   if (self.zoomScale == 1.f) {
-    self.zoomScale = self.minimumZoomScale;
+    self.zoomScale = self.maximumZoomScale;
   } else {
     self.zoomScale = 1.f;
-  }}
+  }
+}
 
 - (void)singTapped:(UITapGestureRecognizer *)recognizer
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewSingleTapNotification
+                                                      object:self];
+}
+
+- (void)longPressed:(UITapGestureRecognizer *)recognizer
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewLongPressedNotification
                                                       object:self];
 }
 

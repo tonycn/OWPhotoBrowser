@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 extern NSString *const kOWPhotoZoomingViewSingleTapNotification;
+extern NSString *const kOWPhotoZoomingViewLongPressedNotification;
 
 @interface OWPhotoZoomingView : UIScrollView
 @property (nonatomic, assign) BOOL loaded;
