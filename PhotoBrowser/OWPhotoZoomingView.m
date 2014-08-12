@@ -13,6 +13,10 @@
 NSString *const kOWPhotoZoomingViewSingleTapNotification = @"OWPhotoZoomingViewSingleTapNotification";
 NSString *const kOWPhotoZoomingViewLongPressedNotification = @"OWPhotoZoomingViewLongPressedNotification";
 
+
+NSString *const kOWPhotoZoomingViewNotificationObjectKeyImageView = @"SingleTapNotificationKeyImageView";
+NSString *const kOWPhotoZoomingViewNotificationObjectKeyImage = @"SingleTapNotificationKeyImage";
+
 static Class gImageViewClass = NULL;
 
 @interface OWPhotoZoomingView () <UIScrollViewDelegate>
@@ -134,14 +138,28 @@ static Class gImageViewClass = NULL;
 
 - (void)singTapped:(UITapGestureRecognizer *)recognizer
 {
+  NSDictionary *objInfo = @{};
+  if (self.photoImageView.image) {
+    objInfo = @{
+      kOWPhotoZoomingViewNotificationObjectKeyImageView :self.photoImageView,
+      kOWPhotoZoomingViewNotificationObjectKeyImage : self.photoImageView.image
+      };
+  }
   [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewSingleTapNotification
-                                                      object:self];
+                                                      object:objInfo];
 }
 
 - (void)longPressed:(UITapGestureRecognizer *)recognizer
 {
+  NSDictionary *objInfo = @{};
+  if (self.photoImageView.image) {
+    objInfo = @{
+                kOWPhotoZoomingViewNotificationObjectKeyImageView :self.photoImageView,
+                kOWPhotoZoomingViewNotificationObjectKeyImage : self.photoImageView.image
+                };
+  }
   [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewLongPressedNotification
-                                                      object:self];
+                                                      object:objInfo];
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset

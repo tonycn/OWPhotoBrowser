@@ -11,6 +11,9 @@
 extern NSString *const kOWPhotoZoomingViewSingleTapNotification;
 extern NSString *const kOWPhotoZoomingViewLongPressedNotification;
 
+extern NSString *const kOWPhotoZoomingViewNotificationObjectKeyImageView;
+extern NSString *const kOWPhotoZoomingViewNotificationObjectKeyImage;
+
 @interface OWPhotoZoomingView : UIScrollView
 @property (nonatomic, assign) BOOL loaded;
 - (void)setPhotoImage:(UIImage *)image;
