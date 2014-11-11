@@ -60,6 +60,28 @@ static Class gImageViewClass = NULL;
   return self;
 }
 
+- (void)reLayoutImageView
+{
+  UIImage *img = self.photoImageView.image;
+  CGFloat screenScale = [UIScreen mainScreen].scale;
+  CGSize imgSize = CGSizeMake(img.size.width * img.scale / screenScale,
+                              img.size.height * img.scale / screenScale);
+  CGRect rect= self.frame;
+  rect.origin = CGPointZero;
+  if (imgSize.width < rect.size.width
+      && imgSize.height < self.bounds.size.height) {
+    self.photoImageView.frame = rect;
+  } else {
+    if (imgSize.width < rect.size.width) {
+      rect.size.height = imgSize.height;
+    }
+    self.photoImageView.frame = rect;
+  }
+  self.contentSize = self.photoImageView.frame.size;
+  [self.photoImageView setNeedsDisplay];
+  self.contentOffset = CGPointZero;
+}
+
 - (void)setPhotoImage:(UIImage *)img
 {
   CGFloat screenScale = [UIScreen mainScreen].scale;

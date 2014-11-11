@@ -66,6 +66,26 @@ static const CGFloat kPageGap = 10.f;
   
   self.pages.autoresizingMask = ~UIViewAutoresizingNone;
   self.pageIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+  rect = self.bounds;
+  rect.size.width += kPageGap;
+  self.pages.frame = rect;
+
+  CGSize size = self.bounds.size;
+  size.width = (kPageGap + size.width) * self.pageIndicator.numberOfPages;
+  self.pages.contentSize = size;
+  
+  [self.pageViews enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, OWPhotoZoomingView *view, BOOL *stop) {
+    CGRect rect = self.pages.bounds;
+    NSInteger curpage = key.integerValue;
+    rect.size.width = self.frame.size.width;
+    rect.origin.x = curpage * (rect.size.width + kPageGap);
+    view.frame = rect;
+    view.zoomScale = 1.0f;
+    [view reLayoutImageView];
+  }];
+  [self changeCurrentPageTo:self.pageIndicator.currentPage
+               defaultImage:nil];
 }
 
 - (void)updatePageControlIndicator
@@ -81,11 +101,12 @@ static const CGFloat kPageGap = 10.f;
   self.pages.contentOffset = CGPointMake(curpage * rect.size.width, 0.f);
   OWPhotoZoomingView *photoView = [self.pageViews objectForKey:@(curpage)];
   if (photoView == nil) {
-    rect.size.width = self.frame.size.width;
-    rect.origin.x = curpage * (rect.size.width + kPageGap);
-    photoView = [[OWPhotoZoomingView alloc] initWithFrame:rect];
+    photoView = [[OWPhotoZoomingView alloc] init];
     [self.pageViews setObject:photoView forKey:@(curpage)];
   }
+  rect.size.width = self.frame.size.width;
+  rect.origin.x = curpage * (rect.size.width + kPageGap);
+  photoView.frame = rect;
   [self.pages addSubview:photoView];
   if (!photoView.loaded) {
     [photoView setPhotoImage:img];

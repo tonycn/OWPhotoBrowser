@@ -18,6 +18,7 @@ extern NSString *const kOWPhotoZoomingViewNotificationObjectKeyImage;
 @property (nonatomic, assign) BOOL loaded;
 - (void)setPhotoImage:(UIImage *)image;
 - (void)setLoadingProgress:(CGFloat)progress;
+- (void)reLayoutImageView;
 
 + (void)setImageViewClass:(Class)imageViewClass;
 

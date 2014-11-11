@@ -25,6 +25,10 @@
 {
   self.frame = view.bounds;
   [view addSubview:self];
+  self.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin
+  | UIViewAutoresizingFlexibleRightMargin
+  | UIViewAutoresizingFlexibleTopMargin
+  | UIViewAutoresizingFlexibleBottomMargin;
 }
 
 - (void)setProgress:(CGFloat)progress

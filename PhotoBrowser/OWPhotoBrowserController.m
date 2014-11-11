@@ -66,6 +66,10 @@
 {
   [super viewDidAppear:animated];
   
+  if (self.presentingViewController) {
+    self.view.frame = self.presentingViewController.view.bounds;
+    self.view.autoresizingMask = ~UIViewAutoresizingNone;
+  }
   if ([self.datasource count] == 1) {
     OWPhotoZoomingView *photoView = [[OWPhotoZoomingView alloc] initWithFrame:self.view.bounds];
     photoView.autoresizingMask = ~UIViewAutoresizingNone;
