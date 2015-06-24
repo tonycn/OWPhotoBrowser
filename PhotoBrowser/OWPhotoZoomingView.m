@@ -171,17 +171,19 @@ static Class gImageViewClass = NULL;
                                                       object:objInfo];
 }
 
-- (void)longPressed:(UITapGestureRecognizer *)recognizer
+- (void)longPressed:(UILongPressGestureRecognizer *)recognizer
 {
-  NSDictionary *objInfo = @{};
-  if (self.photoImageView.image) {
-    objInfo = @{
-                kOWPhotoZoomingViewNotificationObjectKeyImageView :self.photoImageView,
-                kOWPhotoZoomingViewNotificationObjectKeyImage : self.photoImageView.image
-                };
+  if (recognizer.state == UIGestureRecognizerStateBegan) {
+    NSDictionary *objInfo = @{};
+    if (self.photoImageView.image) {
+      objInfo = @{
+                  kOWPhotoZoomingViewNotificationObjectKeyImageView :self.photoImageView,
+                  kOWPhotoZoomingViewNotificationObjectKeyImage : self.photoImageView.image
+                  };
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewLongPressedNotification
+                                                        object:objInfo];
   }
-  [[NSNotificationCenter defaultCenter] postNotificationName:kOWPhotoZoomingViewLongPressedNotification
-                                                      object:objInfo];
 }
 
 - (void)setContentOffset:(CGPoint)contentOffset
