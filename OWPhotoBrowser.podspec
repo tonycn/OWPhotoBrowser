@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name               = 'OWPhotoBrowser'
-  s.version            = '0.1.1'
+  s.version            = '0.1.2'
   s.summary            = 'Light-weight photo browser for iOS.'
   s.homepage           = 'https://github.com/tonycn/OWPhotoBrowser'
   s.author             = { 'Jianjun Wu' => 'jxjstony@gmail.com' }
