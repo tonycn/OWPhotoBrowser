@@ -268,6 +268,7 @@ void _setBoundsToAnimationView(UIImageView *animationView, UIView *container)
     [animationView removeFromSuperview];
     [transitionContext completeTransition:finished];
     self.backToView.hidden = NO;
+    toViewController.view.frame = toViewController.view.superview.bounds;
   }];
 }
 

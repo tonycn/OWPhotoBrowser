@@ -50,14 +50,28 @@ static Class gImageViewClass = NULL;
     frame.origin = CGPointZero;
     self.photoImageView = [[gImageViewClass alloc] initWithFrame:frame];
     self.photoImageView.contentMode = UIViewContentModeScaleAspectFit;
-    self.photoImageView.autoresizingMask = ~UIViewAutoresizingNone;
+    self.photoImageView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin
+    | UIViewAutoresizingFlexibleTopMargin
+    | UIViewAutoresizingFlexibleLeftMargin
+    | UIViewAutoresizingFlexibleRightMargin;
     [self addSubview:self.photoImageView];
     
     self.singleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                     action:@selector(singTapped:)];
     [self addGestureRecognizer:self.singleTapGesture];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)orientationDidChange:(NSNotification *)notification
+{
+  [self reLayoutImageView];
 }
 
 - (void)reLayoutImageView
