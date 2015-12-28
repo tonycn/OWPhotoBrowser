@@ -12,7 +12,10 @@ static const CGFloat kPageGap = 10.f;
 
 @interface OWPhotosScroller () <UIScrollViewDelegate>
 @property (nonatomic, strong) UIScrollView *pages;
+@property (nonatomic, assign) NSInteger numberOfPages;
 @property (nonatomic, strong) UIPageControl *pageIndicator;
+@property (nonatomic, strong) UILabel *pageIndicatorLabel;
+@property (nonatomic, strong) UIView *pageIndicatorViewRef;
 @property (nonatomic, strong) NSMutableDictionary *pageViews;
 @end
 
@@ -30,6 +33,10 @@ static const CGFloat kPageGap = 10.f;
     self.pages.delegate = self;
     self.pageIndicator = [[UIPageControl alloc] initWithFrame:(CGRect){0.f, 0.f, 0.f, 40.f}];
     self.pageIndicator.userInteractionEnabled = YES;
+    self.pageIndicatorLabel = [[UILabel alloc] initWithFrame:(CGRect){0.f, 0.f, 120.f, 40.f}];
+    self.pageIndicatorLabel.font = [UIFont systemFontOfSize:12];
+    self.pageIndicatorLabel.textColor = [UIColor whiteColor];
+    self.pageIndicatorLabel.textAlignment = NSTextAlignmentCenter;
     self.pageViews = [NSMutableDictionary dictionary];
     
     __weak typeof(self) weakSelf = self;
@@ -45,11 +52,22 @@ static const CGFloat kPageGap = 10.f;
 
 - (void)setNumberOfPages:(NSInteger)numberOfPages
 {
+  _numberOfPages = numberOfPages;
   self.pageIndicator.numberOfPages = numberOfPages;
   CGSize size = self.bounds.size;
   NSAssert(size.width > 0, @"should set frame before");
   size.width = (kPageGap + size.width) * numberOfPages;
   self.pages.contentSize = size;
+  
+  if (numberOfPages > 10) {
+    [self addSubview:self.pageIndicatorLabel];
+    self.pageIndicatorViewRef = self.pageIndicatorLabel;
+    [self.pageIndicator removeFromSuperview];
+  } else {
+    [self addSubview:self.pageIndicator];
+    self.pageIndicatorViewRef = self.pageIndicator;
+    [self.pageIndicatorLabel removeFromSuperview];
+  }
 }
 
 - (void)setCurrentPage:(NSInteger)currentPage defaultImage:(UIImage *)img
@@ -59,13 +77,13 @@ static const CGFloat kPageGap = 10.f;
 
 - (void)layoutSubviews
 {
-  CGRect rect = self.pageIndicator.frame;
+  CGRect rect = self.pageIndicatorViewRef.frame;
   rect.size.width = self.bounds.size.width;
   rect.origin.y = self.bounds.size.height - rect.size.height;
-  self.pageIndicator.frame = rect;
+  self.pageIndicatorViewRef.frame = rect;
   
   self.pages.autoresizingMask = ~UIViewAutoresizingNone;
-  self.pageIndicator.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  self.pageIndicatorViewRef.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
   rect = self.bounds;
   rect.size.width += kPageGap;
@@ -97,6 +115,7 @@ static const CGFloat kPageGap = 10.f;
 - (void)changeCurrentPageTo:(NSInteger)curpage defaultImage:(UIImage *)img
 {
   self.pageIndicator.currentPage = curpage;
+  self.pageIndicatorLabel.text = [NSString stringWithFormat:@"%d/%d", (int)(curpage + 1), (int)self.numberOfPages];
   CGRect rect = self.pages.bounds;
   self.pages.contentOffset = CGPointMake(curpage * rect.size.width, 0.f);
   OWPhotoZoomingView *photoView = [self.pageViews objectForKey:@(curpage)];
