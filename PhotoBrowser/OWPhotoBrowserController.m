@@ -18,6 +18,12 @@
 @property (nonatomic, strong) UIImageView *backToView;
 @end
 
+@interface OWPhotoBrowserPresentingFadeInAnimator : NSObject <UIViewControllerAnimatedTransitioning>
+@end
+@interface OWPhotoBrowserDismissingFadeOutAnimator : NSObject <UIViewControllerAnimatedTransitioning>
+@end
+
+
 @interface OWPhotoBrowserController () <OWPhotosScrollerDelegate, UIViewControllerTransitioningDelegate>
 @property (nonatomic, strong) id<OWPhotosDataSource> datasource;
 @property (nonatomic, strong) UIImageView *backToView;
@@ -96,7 +102,7 @@
       self.backToView = [self.datasource thumbnailImageViewAtIndex:self.currentPage];
     }
   }
-  BOOL animated = self.backToView.image ? YES : NO;
+  BOOL animated = YES;
   if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
     animated = NO;
   }
@@ -107,16 +113,30 @@
                                                                   presentingController:(UIViewController *)presenting
                                                                       sourceController:(UIViewController *)source
 {
-  OWPhotoBrowserPresentingAnimator *animator = [[OWPhotoBrowserPresentingAnimator alloc] init];
-  animator.fromView = self.fromView;
-  return animator;
+  id<UIViewControllerAnimatedTransitioning> transition;
+  if (self.fromView) {
+    OWPhotoBrowserPresentingAnimator *animator = [[OWPhotoBrowserPresentingAnimator alloc] init];
+    animator.fromView = self.fromView;
+    transition = animator;
+  } else {
+    OWPhotoBrowserPresentingFadeInAnimator *animator = [[OWPhotoBrowserPresentingFadeInAnimator alloc] init];
+    transition = animator;
+  }
+  return transition;
 }
 
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
 {
-  OWPhotoBrowserDismissingAnimator *animator = [[OWPhotoBrowserDismissingAnimator alloc] init];
-  animator.backToView = self.backToView;
-  return animator;
+  id<UIViewControllerAnimatedTransitioning> transition;
+  if (self.backToView) {
+    OWPhotoBrowserDismissingAnimator *animator = [[OWPhotoBrowserDismissingAnimator alloc] init];
+    animator.backToView = self.backToView;
+    transition = animator;
+  } else {
+    OWPhotoBrowserDismissingFadeOutAnimator *animator = [[OWPhotoBrowserDismissingFadeOutAnimator alloc] init];
+    transition = animator;
+  }
+  return transition;
 }
 
 - (void)loadImageAtPage:(NSUInteger)pageNO toView:(OWPhotoZoomingView *)view
@@ -272,5 +292,56 @@ void _setBoundsToAnimationView(UIImageView *animationView, UIView *container)
   }];
 }
 
+@end
+
+@implementation OWPhotoBrowserPresentingFadeInAnimator
+- (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext
+{
+  return kOWPhotoBrowserDefaultAnimationDuration;
+}
+
+- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext
+{
+  UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+  UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+  [[transitionContext containerView] addSubview:toViewController.view];
+  
+  toViewController.view.frame = fromViewController.view.bounds;
+  toViewController.view.transform = CGAffineTransformMakeScale(0.8, 0.8);
+  toViewController.view.center = fromViewController.view.center;
+  toViewController.view.alpha = 0.f;
+  [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    toViewController.view.alpha = 1.f;
+    toViewController.view.transform = CGAffineTransformIdentity;
+    toViewController.view.frame = fromViewController.view.bounds;
+  } completion:^(BOOL finished) {
+    [transitionContext completeTransition:YES];
+  }];
+}
+@end
+@implementation OWPhotoBrowserDismissingFadeOutAnimator
+- (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext
+{
+  return kOWPhotoBrowserDefaultAnimationDuration;
+}
+
+- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext
+{
+  UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
+  UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+  
+  [[transitionContext containerView] insertSubview:toViewController.view belowSubview:fromViewController.view];
+  fromViewController.view.transform = CGAffineTransformIdentity;
+  fromViewController.view.center = fromViewController.view.center;
+  
+  [UIView animateWithDuration:0.2f delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
+    fromViewController.view.frame = fromViewController.view.bounds;
+    fromViewController.view.transform = CGAffineTransformMakeScale(0.8, 0.8);
+    fromViewController.view.alpha = 0.0f;
+  } completion:^(BOOL finished) {
+    [transitionContext completeTransition:YES];
+    fromViewController.view.transform = CGAffineTransformIdentity;
+  }];
+}
 @end
 

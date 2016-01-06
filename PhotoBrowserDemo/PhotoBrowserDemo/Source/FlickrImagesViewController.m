@@ -90,10 +90,10 @@ static NSArray *gLargeImages = nil;
 - (void)showFromView:(UIImageView *)view
 {
   OWCustomPhotosDataSource *datasource = [[OWCustomPhotosDataSource alloc] initWithImageURLs:gLargeImages];
-  datasource.thumbnailViews = self.imageViews;
+//  datasource.thumbnailViews = self.imageViews;
   OWPhotoBrowserController *photoBrowser = [[OWPhotoBrowserController alloc] initWithDataSource:datasource];
   [photoBrowser setCurrentPage:[self.imageViews indexOfObject:view]];
-  photoBrowser.fromView = view;
+  photoBrowser.fromView = nil;
   [self presentViewController:photoBrowser
                      animated:view.image ? YES : NO
                    completion:NULL];
