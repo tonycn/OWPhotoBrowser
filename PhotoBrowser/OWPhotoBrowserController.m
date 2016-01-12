@@ -106,6 +106,9 @@
   if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
     animated = NO;
   }
+  if (self.backToView == nil) {
+    animated = NO;
+  }
   [self.presentingViewController dismissViewControllerAnimated:animated completion:NULL];
 }
 
@@ -133,8 +136,7 @@
     animator.backToView = self.backToView;
     transition = animator;
   } else {
-    OWPhotoBrowserDismissingFadeOutAnimator *animator = [[OWPhotoBrowserDismissingFadeOutAnimator alloc] init];
-    transition = animator;
+    transition = nil;
   }
   return transition;
 }
@@ -329,7 +331,7 @@ void _setBoundsToAnimationView(UIImageView *animationView, UIView *container)
 {
   UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
   UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-  
+  fromViewController.view.backgroundColor = [UIColor clearColor];
   [[transitionContext containerView] insertSubview:toViewController.view belowSubview:fromViewController.view];
   fromViewController.view.transform = CGAffineTransformIdentity;
   fromViewController.view.center = fromViewController.view.center;
@@ -337,7 +339,6 @@ void _setBoundsToAnimationView(UIImageView *animationView, UIView *container)
   [UIView animateWithDuration:0.2f delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^{
     fromViewController.view.frame = fromViewController.view.bounds;
     fromViewController.view.transform = CGAffineTransformMakeScale(0.8, 0.8);
-    fromViewController.view.alpha = 0.0f;
   } completion:^(BOOL finished) {
     [transitionContext completeTransition:YES];
     fromViewController.view.transform = CGAffineTransformIdentity;
